@@ -30,6 +30,8 @@
  * <http://gamma.cs.unc.edu/RVO2/>
  */
 
+using BEPUutilities;
+
 namespace ECS.RVO
 {
     /**

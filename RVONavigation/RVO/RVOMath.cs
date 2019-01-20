@@ -70,7 +70,7 @@ namespace ECS.RVO
          */
         internal static Fix64 absSq(Vector2 vector)
         {
-            return vector * vector;
+            return vector.LengthSquared();
         }
 
         /**
@@ -84,7 +84,7 @@ namespace ECS.RVO
          */
         internal static Vector2 normalize(Vector2 vector)
         {
-            return vector / abs(vector);
+            return Vector2.Normalize(vector);
         }
 
         /**
@@ -102,7 +102,7 @@ namespace ECS.RVO
          */
         internal static Fix64 det(Vector2 vector1, Vector2 vector2)
         {
-            return vector1.x_ * vector2.y_ - vector1.y_ * vector2.x_;
+            return vector1.X * vector2.Y - vector1.Y * vector2.X;
         }
 
         /**
@@ -120,7 +120,7 @@ namespace ECS.RVO
          */
         internal static Fix64 distSqPointLineSegment(Vector2 vector1, Vector2 vector2, Vector2 vector3)
         {
-            Fix64 r = ((vector3 - vector1) * (vector2 - vector1)) / absSq(vector2 - vector1);
+            Fix64 r = Vector2.Dot((vector3 - vector1), (vector2 - vector1)) / absSq(vector2 - vector1);
 
             if (r < Fix64.Zero)
             {

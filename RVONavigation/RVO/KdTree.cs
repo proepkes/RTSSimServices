@@ -262,15 +262,15 @@ namespace ECS.RVO
         {
             agentTree_[node].begin_ = begin;
             agentTree_[node].end_ = end;
-            agentTree_[node].minX_ = agentTree_[node].maxX_ = agents_[begin].position_.x_;
-            agentTree_[node].minY_ = agentTree_[node].maxY_ = agents_[begin].position_.y_;
+            agentTree_[node].minX_ = agentTree_[node].maxX_ = agents_[begin].position_.X;
+            agentTree_[node].minY_ = agentTree_[node].maxY_ = agents_[begin].position_.Y;
 
             for (int i = begin + 1; i < end; ++i)
             {
-                agentTree_[node].maxX_ = RVOMath.Max(agentTree_[node].maxX_, agents_[i].position_.x_);
-                agentTree_[node].minX_ = RVOMath.Min(agentTree_[node].minX_, agents_[i].position_.x_);
-                agentTree_[node].maxY_ = RVOMath.Max(agentTree_[node].maxY_, agents_[i].position_.y_);
-                agentTree_[node].minY_ = RVOMath.Min(agentTree_[node].minY_, agents_[i].position_.y_);
+                agentTree_[node].maxX_ = RVOMath.Max(agentTree_[node].maxX_, agents_[i].position_.X);
+                agentTree_[node].minX_ = RVOMath.Min(agentTree_[node].minX_, agents_[i].position_.X);
+                agentTree_[node].maxY_ = RVOMath.Max(agentTree_[node].maxY_, agents_[i].position_.Y);
+                agentTree_[node].minY_ = RVOMath.Min(agentTree_[node].minY_, agents_[i].position_.Y);
             }
 
             if (end - begin > MAX_LEAF_SIZE)
@@ -284,12 +284,12 @@ namespace ECS.RVO
 
                 while (left < right)
                 {
-                    while (left < right && (isVertical ? agents_[left].position_.x_ : agents_[left].position_.y_) < splitValue)
+                    while (left < right && (isVertical ? agents_[left].position_.X : agents_[left].position_.Y) < splitValue)
                     {
                         ++left;
                     }
 
-                    while (right > left && (isVertical ? agents_[right - 1].position_.x_ : agents_[right - 1].position_.y_) >= splitValue)
+                    while (right > left && (isVertical ? agents_[right - 1].position_.X : agents_[right - 1].position_.Y) >= splitValue)
                     {
                         --right;
                     }
@@ -498,8 +498,8 @@ namespace ECS.RVO
             }
             else
             {
-                Fix64 distSqLeft = RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].left_].minX_ - agent.position_.x_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.x_ - agentTree_[agentTree_[node].left_].maxX_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].left_].minY_ - agent.position_.y_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.y_ - agentTree_[agentTree_[node].left_].maxY_));
-                Fix64 distSqRight = RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].right_].minX_ - agent.position_.x_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.x_ - agentTree_[agentTree_[node].right_].maxX_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].right_].minY_ - agent.position_.y_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.y_ - agentTree_[agentTree_[node].right_].maxY_));
+                Fix64 distSqLeft = RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].left_].minX_ - agent.position_.X)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.X - agentTree_[agentTree_[node].left_].maxX_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].left_].minY_ - agent.position_.Y)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.Y - agentTree_[agentTree_[node].left_].maxY_));
+                Fix64 distSqRight = RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].right_].minX_ - agent.position_.X)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.X - agentTree_[agentTree_[node].right_].maxX_)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agentTree_[agentTree_[node].right_].minY_ - agent.position_.Y)) + RVOMath.sqr(RVOMath.Max(Fix64.Zero, agent.position_.Y - agentTree_[agentTree_[node].right_].maxY_));
 
                 if (distSqLeft < distSqRight)
                 {
