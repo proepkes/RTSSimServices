@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ECS</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BEPUutilities">
+      <HintPath>..\..\UnityLockstep\Engine\Dependencies\BEPUutilities.dll</HintPath>
+    </Reference>
+    <Reference Include="ECS">
+      <HintPath>..\..\UnityLockstep\Engine\ECS\bin\Debug\ECS.dll</HintPath>
+    </Reference>
+    <Reference Include="FixMath.NET">
+      <HintPath>..\..\UnityLockstep\Engine\Dependencies\FixMath.NET.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
