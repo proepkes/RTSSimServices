@@ -32,6 +32,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BEPUutilities;
 using FixMath.NET;
 
@@ -216,16 +217,16 @@ namespace ECS.RVO
         {       
             kdTree_.buildAgentTree();
 
-            foreach (var agent in agents_)
+            Parallel.ForEach(agents_, agent =>
             {
                 agent.computeNeighbors();
                 agent.computeNewVelocity();
-            }
+            });
 
-            foreach (var agent in agents_)
+            Parallel.ForEach(agents_, agent =>
             {
-                agent.update();    
-            }                                 
+                agent.update();
+            });
 
             globalTime_ += timeStep_;
 

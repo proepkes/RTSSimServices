@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BEPUutilities;
 using ECS.RVO;
 using FixMath.NET;                          
@@ -22,32 +23,27 @@ namespace ECS
             Simulator.Instance.addAgent(id, new Vector2(position.X, position.Y));
         }
 
-        public void UpdateDestination(int[] agentIds, Vector2 newDestination)
+        public void SetAgentDestination(int agentId, Vector2 newDestination)
         {
-            foreach (var id in agentIds)
-            {
-                _goals[id] = new Vector2(newDestination.X, newDestination.Y);
-            }    
+            _goals[agentId] = new Vector2(newDestination.X, newDestination.Y);
         }
-
+              
         public void UpdateAgents()
         {
-            foreach (var agent in Simulator.Instance.agents_)
+            Parallel.ForEach(Simulator.Instance.agents_, agent =>
             {
-                if (!_goals.ContainsKey(agent.id_))
-                {
-                     continue;
+                if (_goals.ContainsKey(agent.id_))
+                {     
+                    var goalVector = _goals[agent.id_] - agent.position_;
+
+                    if (RVOMath.absSq(goalVector) > Fix64.One)
+                    {
+                        goalVector = RVOMath.normalize(goalVector);
+                    }
+
+                    agent.prefVelocity_ = goalVector;
                 }
-
-                var goalVector = _goals[agent.id_] - agent.position_;
-
-                if (RVOMath.absSq(goalVector) > Fix64.One)
-                {
-                    goalVector = RVOMath.normalize(goalVector);
-                }
-
-                agent.prefVelocity_ = goalVector; 
-            }
+            });
 
             Simulator.Instance.doStep();
         }      
