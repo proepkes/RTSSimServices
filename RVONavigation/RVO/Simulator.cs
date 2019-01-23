@@ -43,7 +43,7 @@ namespace ECS.RVO
      */
     internal class Simulator
     {                   
-        internal IList<Agent> agents_;
+        internal IDictionary<int, Agent> agents_;
         internal IList<Obstacle> obstacles_;
         internal KdTree kdTree_;
         internal Fix64 timeStep_;
@@ -62,16 +62,15 @@ namespace ECS.RVO
          * <param name="position">The two-dimensional starting position of this
          * agent.</param>
          */
-        internal int addAgent(int id, Vector2 position)
+        internal void addAgent(int id, Vector2 position)
         {
             if (defaultAgent_ == null)
             {
-                return -1;
+                return;
             }
 
             Agent agent = new Agent
-            {
-                id_ = id,
+            {             
                 maxNeighbors_ = defaultAgent_.maxNeighbors_,
                 maxSpeed_ = defaultAgent_.maxSpeed_,
                 neighborDist_ = defaultAgent_.neighborDist_,
@@ -81,9 +80,7 @@ namespace ECS.RVO
                 timeHorizonObst_ = defaultAgent_.timeHorizonObst_,
                 velocity_ = defaultAgent_.velocity_
             };
-            agents_.Add(agent);
-
-            return agent.id_;
+            agents_.Add(id, agent);  
         }
 
         /**
@@ -120,10 +117,9 @@ namespace ECS.RVO
          * <param name="velocity">The initial two-dimensional linear velocity of
          * this agent.</param>
          */
-        internal int addAgent(Vector2 position, Fix64 neighborDist, int maxNeighbors, Fix64 timeHorizon, Fix64 timeHorizonObst, Fix64 radius, Fix64 maxSpeed, Vector2 velocity)
+        internal void addAgent(Vector2 position, Fix64 neighborDist, int maxNeighbors, Fix64 timeHorizon, Fix64 timeHorizonObst, Fix64 radius, Fix64 maxSpeed, Vector2 velocity)
         {
-            Agent agent = new Agent();
-            agent.id_ = agents_.Count;
+            Agent agent = new Agent();  
             agent.maxNeighbors_ = maxNeighbors;
             agent.maxSpeed_ = maxSpeed;
             agent.neighborDist_ = neighborDist;
@@ -132,9 +128,7 @@ namespace ECS.RVO
             agent.timeHorizon_ = timeHorizon;
             agent.timeHorizonObst_ = timeHorizonObst;
             agent.velocity_ = velocity;
-            agents_.Add(agent);
-
-            return agent.id_;
+            agents_.Add(agents_.Count, agent);  
         }
 
         /**
@@ -199,7 +193,7 @@ namespace ECS.RVO
          */
         internal void Clear()
         {
-            agents_ = new List<Agent>();
+            agents_ = new Dictionary<int, Agent>();
             defaultAgent_ = null;
             kdTree_ = new KdTree();
             obstacles_ = new List<Obstacle>();
@@ -217,13 +211,13 @@ namespace ECS.RVO
         {       
             kdTree_.buildAgentTree();
 
-            Parallel.ForEach(agents_, agent =>
+            Parallel.ForEach(agents_.Values, agent =>
             {
                 agent.computeNeighbors();
                 agent.computeNewVelocity();
             });
 
-            Parallel.ForEach(agents_, agent =>
+            Parallel.ForEach(agents_.Values, agent =>
             {
                 agent.update();
             });
@@ -231,23 +225,7 @@ namespace ECS.RVO
             globalTime_ += timeStep_;
 
             return globalTime_;
-        }
-
-        /**
-         * <summary>Returns the specified agent neighbor of the specified agent.
-         * </summary>
-         *
-         * <returns>The number of the neighboring agent.</returns>
-         *
-         * <param name="agentNo">The number of the agent whose agent neighbor is
-         * to be retrieved.</param>
-         * <param name="neighborNo">The number of the agent neighbor to be
-         * retrieved.</param>
-         */
-        internal int getAgentAgentNeighbor(int agentNo, int neighborNo)
-        {
-            return agents_[agentNo].agentNeighbors_[neighborNo].Value.id_;
-        }
+        }           
 
         /**
          * <summary>Returns the maximum neighbor count of a specified agent.
@@ -354,22 +332,7 @@ namespace ECS.RVO
         internal IList<Line> getAgentOrcaLines(int agentNo)
         {
             return agents_[agentNo].orcaLines_;
-        }
-
-        /**
-         * <summary>Returns the two-dimensional position of a specified agent.
-         * </summary>
-         *
-         * <returns>The present two-dimensional position of the (center of the)
-         * agent.</returns>
-         *
-         * <param name="agentNo">The number of the agent whose two-dimensional
-         * position is to be retrieved.</param>
-         */
-        internal Vector2 getAgentPosition(int agentNo)
-        {
-            return agents_.First(agent => agent.id_ == agentNo).position_;
-        }
+        }      
 
         /**
          * <summary>Returns the two-dimensional preferred velocity of a

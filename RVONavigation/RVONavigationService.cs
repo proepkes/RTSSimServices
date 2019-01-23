@@ -8,9 +8,7 @@ using FixMath.NET;
 namespace ECS
 {
     public class RVONavigationService : INavigationService  
-    {
-        private readonly Dictionary<int, Vector2> _goals = new Dictionary<int, Vector2>();
-
+    {                                                                                        
         public RVONavigationService()
         {
             Simulator.Instance.setTimeStep(0.5m);
@@ -25,32 +23,22 @@ namespace ECS
 
         public void SetAgentDestination(int agentId, Vector2 newDestination)
         {
-            _goals[agentId] = new Vector2(newDestination.X, newDestination.Y);
+            Simulator.Instance.agents_[agentId].Destination = newDestination;    
         }
               
-        public void UpdateAgents()
+        public void Tick()
         {
-            Parallel.ForEach(Simulator.Instance.agents_, agent =>
+            Parallel.ForEach(Simulator.Instance.agents_.Values, agent =>
             {
-                if (_goals.ContainsKey(agent.id_))
-                {     
-                    var goalVector = _goals[agent.id_] - agent.position_;
-
-                    if (RVOMath.absSq(goalVector) > Fix64.One)
-                    {
-                        goalVector = RVOMath.normalize(goalVector);
-                    }
-
-                    agent.prefVelocity_ = goalVector;
-                }
+                agent.CalculatePrefVelocity();
             });
 
             Simulator.Instance.doStep();
-        }      
+        }
 
-        public Vector2 GetAgentPosition(int agentId)
-        {                
-            return Simulator.Instance.agents_.First(agent => agent.id_ == agentId).position_;
-        }    
+        public Dictionary<int, Vector2> GetAgentPositions()
+        {
+            return Simulator.Instance.agents_.ToDictionary(pair => pair.Key, pair => pair.Value.position_);
+        }   
     }
 }

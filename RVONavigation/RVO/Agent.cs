@@ -45,9 +45,9 @@ namespace ECS.RVO
         internal IList<KeyValuePair<Fix64, Obstacle>> obstacleNeighbors_ = new List<KeyValuePair<Fix64, Obstacle>>();
         internal IList<Line> orcaLines_ = new List<Line>();
         internal Vector2 position_;
-        internal Vector2 prefVelocity_;
-        internal Vector2 velocity_;
-        internal int id_ = 0;
+        internal Vector2 prefVelocity_; 
+        internal Vector2 Destination;
+        internal Vector2 velocity_;  
         internal int maxNeighbors_ = 0;
         internal Fix64 maxSpeed_ = Fix64.Zero;
         internal Fix64 neighborDist_ = Fix64.Zero;
@@ -56,6 +56,18 @@ namespace ECS.RVO
         internal Fix64 timeHorizonObst_ = Fix64.Zero;
 
         private Vector2 newVelocity_;
+
+        internal void CalculatePrefVelocity()
+        {           
+            var goalVector = Destination - position_;
+
+            if (RVOMath.absSq(goalVector) > Fix64.One)
+            {
+                goalVector = RVOMath.normalize(goalVector);
+            }
+
+            prefVelocity_ = goalVector;     
+        }
 
         /**
          * <summary>Computes the neighbors of this agent.</summary>
